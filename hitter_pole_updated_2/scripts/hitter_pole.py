@@ -159,7 +159,7 @@ def gripper(c):
         #print("gripper1")
         pub.publish(grip)
         r.sleep()
-        
+        break
 
                    
 
@@ -240,5 +240,5 @@ while not rospy.is_shutdown():
 #orient_along(-5,0)
 #gripper(0)
 #gripper(-0.2)
-gripper(10)
+gripper(5)
 #path_plan(0.5, 0)
