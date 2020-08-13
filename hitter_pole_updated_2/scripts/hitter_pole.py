@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+from time import time
 import time
 ##from hector_uav_msgs.msg import PoseActionGoal
 ##from geometry_msgs import PoseStamped
@@ -41,53 +42,73 @@ rospy.init_node("speed_controller")
 def path_plan(px, py):
 
     #rospy.init_node("speed_controller")
-    sub = rospy.Subscriber("/mybot/mobile_base_controller/odom", Odometry, newOdom)
+    sub = rospy.Subscriber("/mybot/odom", Odometry, newOdom)
+    #sub = rospy.Subscriber("/mybot/mobile_base_controller/odom", Odometry, newOdom)
     pub = rospy.Publisher("/mybot/mobile_base_controller/cmd_vel", Twist, queue_size=1)
+    #pub = rospy.Publisher("/cmd_vel/", Twist, queue_size=1)
 
     speed = Twist()
-    r = rospy.Rate(4)
+    r = rospy.Rate(1000000000)
     goal = Point()
     ##r = rospy.Rate(1000)
     goal.x = px
     goal.y = py
-    print(goal.x)
-    print(goal.y)
+    #print(goal.x,goal.y)
+    print("goal_x={}  goal_y:{}".format(goal.x,goal.y))
+    #print()
     while not rospy.is_shutdown():
 
         inc_x = goal.x - x
         inc_y = goal.y - y
-        print(x,y)
-        print(inc_x,inc_y)
+        print("current_x={}  current_y:{}".format(x,y))
+        #print(x,y)
+        #print(inc_x,inc_y)
         
 
         angle_to_goal = atan2(inc_y, inc_x)
 
-        if abs(angle_to_goal - theta) > 0.1:
+        if abs(angle_to_goal - theta) > 0.01: 
             
-
+            print("1")
             speed.linear.x = 0.0
             speed.angular.z = 0.3
+            #speed.angular.z =((angle_to_goal)- theta)
             
             if inc_x <0.05 and inc_y <0.05 :
+                print("2")
+                speed.linear.x = 0.0
+                speed.angular.z = 0.0 
+                pub.publish(speed)
+                r.sleep()
                 break
 
               
         else:
             
-            speed.linear.x = 0.2
-            speed.angular.z = 0.0 
+            
             
 
-            if inc_x <0.1 and inc_y <0.1 :
-         
-                speed.linear.x = 0.0
+            if inc_x >0.05 and inc_y >0.05 :
+
+                print("3")
+                speed.linear.x = 0.2
                 speed.angular.z = 0.0
                 pub.publish(speed)
-                break
+                r.sleep()
                 
 
-              
+            else :
+                print("4")
+                speed.linear.x = 0.0
+                speed.angular.z = 0.0 
+                pub.publish(speed)
+                r.sleep()
+                break
+
+
         pub.publish(speed)
+        
+        print("Target={}  Current:{}".format(angle_to_goal,theta))
         r.sleep()
         print("not stopping")    
 
@@ -100,7 +121,7 @@ def orient_along(px, py):
     pub = rospy.Publisher("/mybot/mobile_base_controller/cmd_vel", Twist, queue_size=1)
 
     speed = Twist()
-    r = rospy.Rate(4)
+    r = rospy.Rate(10000000)
     goal = Point()
     ##r = rospy.Rate(1000)
     goal.x = px
@@ -120,18 +141,20 @@ def orient_along(px, py):
         #print(angle_to_goal)
         #print(theta)
         #print(abs(angle_to_goal - theta))
-        if abs(angle_to_goal - theta) > 0.05:
+        if abs(angle_to_goal - theta) > 0.01:
             
 
-            speed.angular.z =0.9
-            #speed.angular.z =  ((90*math.pi/180)- theta)
+            #speed.angular.z =0.9
+            speed.angular.z =((angle_to_goal)- theta)
             
         
         else:
         #    speed.linear.x = 0.0
             speed.angular.z = 0.0
             pub.publish(speed)
+            r.sleep()
             break
+            
                 
         pub.publish(speed)
         print("Target={}  Current:{}".format(angle_to_goal,theta))
@@ -144,22 +167,29 @@ def gripper(c):
 
     #rospy.init_node("gripper")
     pub = rospy.Publisher("/mybot/gripper_extension_controller/command", Float64, queue_size=1)
-    r = rospy.Rate(1000)
+    r = rospy.Rate(100000)
     print("gripper")
     grip = Float64()
-    r = rospy.Rate(1000)
     grip.data=c
 
 
     while not rospy.is_shutdown():
-   
+        #ta =rospy.get_rostime()
+        #b =rospy.get_rostime()
+        #zero_time = rospy.Time()
 
+        if  (tb-ta)*5  <= (1/c) :
+        
+        #for i in range (1):
         #grip.data = [s , d,f]
         #r = rospy.Rate(100)
         #print("gripper1")
-        pub.publish(grip)
-        r.sleep()
-        break
+            pub.publish(grip)
+	            #b = rospy.get_rostime()
+            r.sleep()
+            
+           
+
 
                    
 
@@ -235,10 +265,39 @@ while not rospy.is_shutdown():
         sweeya(a)
         print("sweeya started")
         '''
-#orient_along(0,2)
+#orient_along(0,0.5)
 
 #orient_along(-5,0)
 #gripper(0)
 #gripper(-0.2)
-gripper(5)
+
+
+
+#gripper(10)
+
+#path_plan(2, 2)
+
+#gripper(10)
+
+#path_plan(0.5, -0.5)
+'''
+for i in range (1):
+
+    path_plan(0.5, 0.5)
+    for j  in range (1):
+
+        orient_along(1,0.5)
+'''
+
+#r=rospy.Rate()
+
+
+path_plan(0.5, 0.5)
+#r.sleep()
+#orient_along(1,0.5)
 #path_plan(0.5, 0)
+#orient_along(1,0)
+#path_plan(0.5, -0.5)
+#orient_along(1,-0.5)
+
+
