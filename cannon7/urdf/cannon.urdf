@@ -102,7 +102,7 @@
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh
-          filename="package://piston/meshes/piston.STL" />
+          filename="package://cannon7/meshes/piston.STL" />
       </geometry>
       <material
         name="">
