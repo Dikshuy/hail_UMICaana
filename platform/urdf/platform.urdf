@@ -8,17 +8,17 @@
     name="platform">
     <inertial>
       <origin
-        xyz="0.75 0.30396 0.21934"
+        xyz="0.75 0.30851 0.19941"
         rpy="0 0 0" />
       <mass
-        value="482.29" />
+        value="437.49" />
       <inertia
-        ixx="42.926"
-        ixy="-2.2195E-07"
-        ixz="-5.2838E-06"
-        iyy="98.969"
-        iyz="-11.411"
-        izz="118.12" />
+        ixx="36.584"
+        ixy="-1.0664E-14"
+        ixz="-3.134E-15"
+        iyy="88.65"
+        iyz="-9.2666"
+        izz="107.21" />
     </inertial>
     <visual>
       <origin
