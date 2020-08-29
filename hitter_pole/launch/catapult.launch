@@ -23,7 +23,7 @@
   </include-->
 
   
-  <param name="catapult/robot_description" command="$(find xacro)/xacro.py '$(find hitter_pole)/urdf/catapult_2.urdf'"/>
+  <param name="catapult/robot_description" command="$(find xacro)/xacro.py '$(find hitter_pole)/urdf/catapult_final.urdf'"/>
 
   <param name="robot_description_sdf" command="$(find xacro)/xacro.py '$(find hitter_pole)/urdf/model.sdf'"/>
 
@@ -42,7 +42,7 @@
   <!-- convert joint states to TF transforms for rviz, etc -->
   <node name="robot_state_publisher" ns="$(arg robot_name)" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
 
-    <param name="robot_description"  command="$(find xacro)/xacro.py  '$(find hitter_pole)/urdf/catapult_2.urdf'"/>
+    <param name="robot_description"  command="$(find xacro)/xacro.py  '$(find hitter_pole)/urdf/catapult_final.urdf'"/>
     <!--remap from="/joint_states" to="/catapult/joint_states" /-->
   </node>
 

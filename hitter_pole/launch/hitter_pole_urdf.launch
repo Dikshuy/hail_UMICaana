@@ -21,7 +21,7 @@
   </include>
 
   
-  <param name="mybot/robot_description" command="$(find xacro)/xacro.py '$(find hitter_pole)/urdf/adv.urdf'"/>
+  <param name="mybot/robot_description" command="$(find xacro)/xacro.py '$(find hitter_pole)/urdf/side_pole.urdf'"/>
 
   <!--param name="robot_description_sdf" command="$(find xacro)/xacro.py '$(find hitter_pole)/urdf/hitter_pole.sdf'"/-->
 

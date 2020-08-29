@@ -1,7 +1,11 @@
 Execute everything mentioned below in different terminals
 
-roslaunch hitter_pole.launch to launch the model in an empty world
+For Adv PS
 
-roslaunch hitter_pole_control.launch to load in controllers 
+roslaunch hitter_pole main.launch
 
-rostopic pub to /mybot/gripper_extension_controller to change extension of pole. (Max value is 0.3, Min value is 0.0)
+insert platform and objects at proper locations
+
+rosrun  hitter_pole latest.py (for only catapult)
+OR
+rosrun hitter_pole something.py (for integrated code)

@@ -24,7 +24,7 @@
   <group ns="/">
     <param name="tf_prefix" value="catapult_tf" />
     <include file="$(find hitter_pole)/launch/catapult.launch" >
-      <arg name="init_pose" value="-x -3.65 -y 0 -z 0" />
+      <arg name="init_pose" value="0 0 0 0 0 0" />
       <arg name="robot_name"  value="catapult" />
     </include>
   </group>

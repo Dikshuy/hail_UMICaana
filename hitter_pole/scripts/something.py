@@ -10,6 +10,7 @@ import math
 import time
 from geometry_msgs.msg import Point, Twist
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import JointState
 
 pixel =64
 #global alphabets 
@@ -39,6 +40,16 @@ t=0
 v=0
 
 
+offset=0.0
+x=0.0
+
+def callback(data):
+    global x
+    if data.position[0]!=0:
+        x=data.position[0]
+    #print(x)
+
+
 def newOdom(msg):
     global x
     global y
@@ -57,10 +68,63 @@ def newOdom(msg):
     v = msg .twist.twist.linear.x
     t = msg .twist.twist.angular.z
 
+def rotate(angle):
+    global offset
+    speed=Float64()
+    sub1 = rospy.Subscriber("/catapult/joint_states", JointState, callback)
+    pub3 = rospy.Publisher("/catapult/base_rotation_controller/command", Float64, queue_size=1)
+
+    while True:
+        inc_theta=angle-x+offset
+        #print(inc_theta)
+        if abs(inc_theta)>0.005:
+            speed.data=0.3*inc_theta
+            pub3.publish(speed)
+
+        if abs(inc_theta)<=0.005:
+            speed.data=0
+            pub3.publish(speed)
+            break
+    sub1.unregister()
+
 def distance(x1,y1,x2,y2):
 	d=math.sqrt(((x2-x1)**2)+((y2-y1)**2))
 
 	return d
+
+def angle_plan(px,py):
+    inc_x=px+4.247
+    inc_y=py
+
+    angle=math.atan2(-inc_y,-inc_x)
+
+    rotate(angle)
+
+def throwing_plan(px,py):
+    v=Float64()
+    pub2 = rospy.Publisher("/catapult/throwing_controller/command", Float64, queue_size=1)
+    d=distance(-4.247,0,px,py)
+    ang_vel=(d+9)/3.4
+    v.data=ang_vel
+
+
+        
+
+    pub2.publish(v)
+
+    rospy.sleep(0.5)
+
+    v.data=-1
+
+    pub2.publish(v)
+
+    rospy.sleep(1)
+
+    v.data=0
+
+    pub2.publish(v)
+
+
 
 
 
@@ -184,6 +248,8 @@ def reverse_path_plan(px, py):
     
     sub = rospy.Subscriber("/mybot/odom", Odometry, newOdom)
     pub = rospy.Publisher("/mybot/mobile_base_controller/cmd_vel", Twist, queue_size=1)
+
+
     
 
     speed = Twist()
@@ -365,8 +431,12 @@ def publisher():
     global r
     r = rospy.Rate(100)
     c.data=0
-    pub2=rospy.Publisher('/mybot/gripper_extension_controller/command',Float64,queue_size=10)
+    sub = rospy.Subscriber("/mybot/odom", Odometry, newOdom)
     pub = rospy.Publisher("/mybot/mobile_base_controller/cmd_vel", Twist, queue_size=1)
+
+    pub3 = rospy.Publisher("/catapult/base_rotation_controller/command", Float64, queue_size=1)
+    pub2 = rospy.Publisher("/catapult/throwing_controller/command", Float64, queue_size=1)
+
 
 
     out.linear.x = 0
@@ -384,29 +454,84 @@ def publisher():
         #path_plan(point_decide(0.5,1,2,5)[0],point_decide(0.5,1,2,5)[1])
         #orient_along(2,5)
         #speed=decide_piston_speed(0.5,1,2,5)
-
+        offset=0
         path_plan(0.5,1)
         path_plan(1.5,1)
-        path_plan(1.5,0.5)
-        orient_along(5,0.4)
+        path_plan(1.5,0.6)
+        orient_along(5,0.5)
 
-        reverse_path_plan(0,0.4)
+        reverse_path_plan(0,0)
         orient_along(5,0)
 
         t0=time.time()
         t1=time.time()
-        while (t1-t0)<9:
+        while (t1-t0)<9.35:
         	out.linear.x=-0.3
         	pub.publish(out)
         	t1=time.time()
         out.linear.x=0
         pub.publish(out)
 
-        path_plan(0,0.4)
-	
-	
+        path_plan(0,0)
+        orient_along(1,0)
+
+        angle_plan(-7,7)
+        rospy.sleep(0.5)
+        throwing_plan(-7,7)
+        offset=offset+0.080155
+        angle_plan(-5,0)
 
 
+
+
+        path_plan(0.5,0.5)
+        path_plan(1.5,0.5)
+        path_plan(1.5,0)
+        orient_along(5,0)
+
+        t0=time.time()
+        t1=time.time()
+        while (t1-t0)<12:
+        	out.linear.x=-0.3
+        	pub.publish(out)
+        	t1=time.time()
+        out.linear.x=0
+        pub.publish(out)
+
+        path_plan(0,0)
+        orient_along(1,0)
+
+        angle_plan(-5,-5)
+        rospy.sleep(0.5)
+        throwing_plan(-5,-5)
+        offset=offset+0.080155
+        angle_plan(-5,0)
+
+        path_plan(0.5,-1)
+        path_plan(1.5,-1)
+        path_plan(1.5,-0.6)
+        orient_along(5,-0.5)
+
+        reverse_path_plan(0,0)
+        orient_along(5,0)
+
+        t0=time.time()
+        t1=time.time()
+        while (t1-t0)<9.35:
+        	out.linear.x=-0.3
+        	pub.publish(out)
+        	t1=time.time()
+        out.linear.x=0
+        pub.publish(out)
+
+        path_plan(0,0)
+        orient_along(1,0)
+
+        angle_plan(3,0)
+        rospy.sleep(0.5)
+        throwing_plan(3,0)
+        offset=offset+0.080155
+        angle_plan(-5,0)
 
 
 
